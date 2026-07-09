@@ -1,0 +1,36 @@
+# Local agent / Codex state
+.agents/
+.codex/
+
+# Obsidian workspace-local state
+.obsidian/workspace*
+.obsidian/cache/
+.trash/
+
+# OS and editor noise
+.DS_Store
+Thumbs.db
+desktop.ini
+~$*
+*.tmp
+*.temp
+*.swp
+*.swo
+
+# Runtime caches and dependency folders
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+node_modules/
+.vite/
+dist/
+build/
+
+# Logs and generated debug output
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*

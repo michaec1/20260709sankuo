@@ -1,0 +1,894 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>三國重大事件時間軸</title>
+  <style>
+    :root {
+      --paper: #f7f5ef;
+      --paper-deep: #ebe5d6;
+      --ink: #1f2522;
+      --muted: #69716b;
+      --hair: #c9c0ae;
+      --cinnabar: #a83b2e;
+      --cinnabar-dark: #7d2b23;
+      --jade: #34695b;
+      --indigo: #253c5c;
+      --gold: #9a7534;
+      --shadow: 0 18px 55px rgba(34, 30, 24, .13);
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      color: var(--ink);
+      background:
+        linear-gradient(90deg, rgba(31,37,34,.035) 1px, transparent 1px) 0 0 / 34px 34px,
+        linear-gradient(180deg, rgba(31,37,34,.025) 1px, transparent 1px) 0 0 / 34px 34px,
+        var(--paper);
+      font-family: "Noto Serif TC", "Source Han Serif TC", "Songti TC", "PMingLiU", serif;
+      line-height: 1.7;
+    }
+
+    button,
+    input,
+    select {
+      font: inherit;
+    }
+
+    .shell {
+      display: grid;
+      grid-template-columns: minmax(280px, 380px) minmax(0, 1fr);
+      min-height: 100vh;
+    }
+
+    aside {
+      position: sticky;
+      top: 0;
+      height: 100vh;
+      padding: 30px 26px;
+      border-right: 1px solid var(--hair);
+      background:
+        radial-gradient(circle at 12% 0%, rgba(168, 59, 46, .08), transparent 26%),
+        linear-gradient(180deg, rgba(255,255,255,.72), rgba(235,229,214,.7));
+      overflow: auto;
+    }
+
+    main {
+      padding: 36px clamp(18px, 4vw, 54px) 60px;
+    }
+
+    .title-row {
+      display: flex;
+      align-items: flex-start;
+      gap: 18px;
+      margin-bottom: 22px;
+    }
+
+    .seal {
+      width: 58px;
+      aspect-ratio: 1;
+      flex: 0 0 auto;
+      border: 2px solid var(--cinnabar);
+      color: var(--cinnabar);
+      display: grid;
+      place-items: center;
+      font-family: "Noto Serif TC", "Songti TC", serif;
+      font-size: 24px;
+      font-weight: 700;
+      line-height: 1;
+      transform: rotate(-2deg);
+      background: rgba(168, 59, 46, .05);
+    }
+
+    h1 {
+      margin: 0;
+      font-size: clamp(30px, 4vw, 54px);
+      line-height: 1.08;
+      letter-spacing: 0;
+      font-weight: 700;
+    }
+
+    .subtitle {
+      margin: 10px 0 0;
+      color: var(--muted);
+      font-size: 15px;
+      max-width: 28em;
+    }
+
+    .meta-strip {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      border-block: 1px solid var(--hair);
+      margin: 24px 0;
+    }
+
+    .meta-strip div {
+      padding: 12px 0;
+    }
+
+    .meta-strip div + div {
+      border-left: 1px solid var(--hair);
+      padding-left: 18px;
+    }
+
+    .meta-label {
+      display: block;
+      color: var(--muted);
+      font: 12px/1.4 "Segoe UI", "Noto Sans TC", sans-serif;
+      letter-spacing: .08em;
+      text-transform: uppercase;
+    }
+
+    .meta-value {
+      display: block;
+      margin-top: 4px;
+      font-size: 20px;
+      font-weight: 700;
+    }
+
+    .controls {
+      display: grid;
+      gap: 18px;
+    }
+
+    .control-block {
+      display: grid;
+      gap: 9px;
+    }
+
+    label,
+    .control-title {
+      color: #3b403c;
+      font: 13px/1.4 "Segoe UI", "Noto Sans TC", sans-serif;
+      font-weight: 700;
+    }
+
+    .searchbox {
+      width: 100%;
+      border: 1px solid var(--hair);
+      background: rgba(255,255,255,.62);
+      color: var(--ink);
+      padding: 11px 12px;
+      border-radius: 0;
+      outline: none;
+    }
+
+    .searchbox:focus,
+    .chip:focus-visible,
+    .reset:focus-visible,
+    .event-card:focus-visible {
+      outline: 2px solid var(--cinnabar);
+      outline-offset: 3px;
+    }
+
+    .chips {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .chip,
+    .reset {
+      border: 1px solid var(--hair);
+      background: rgba(255,255,255,.54);
+      color: var(--ink);
+      border-radius: 999px;
+      min-height: 34px;
+      padding: 6px 12px;
+      cursor: pointer;
+      transition: border-color .2s ease, background .2s ease, color .2s ease, transform .2s ease;
+      font: 13px/1.2 "Segoe UI", "Noto Sans TC", sans-serif;
+    }
+
+    .chip:hover,
+    .reset:hover {
+      transform: translateY(-1px);
+      border-color: var(--ink);
+    }
+
+    .chip.active {
+      background: var(--ink);
+      color: var(--paper);
+      border-color: var(--ink);
+    }
+
+    .range-row {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 12px;
+      align-items: center;
+    }
+
+    input[type="range"] {
+      width: 100%;
+      accent-color: var(--cinnabar);
+    }
+
+    .range-value {
+      min-width: 72px;
+      text-align: right;
+      color: var(--cinnabar-dark);
+      font-weight: 700;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .note {
+      margin-top: 20px;
+      color: var(--muted);
+      font-size: 13px;
+      border-top: 1px solid var(--hair);
+      padding-top: 16px;
+    }
+
+    .period-nav {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin-bottom: 24px;
+    }
+
+    .period-nav a {
+      color: var(--muted);
+      text-decoration: none;
+      border-bottom: 1px solid transparent;
+      font: 13px/1.2 "Segoe UI", "Noto Sans TC", sans-serif;
+      padding-bottom: 3px;
+    }
+
+    .period-nav a:hover {
+      color: var(--ink);
+      border-color: var(--cinnabar);
+    }
+
+    .timeline {
+      position: relative;
+      display: grid;
+      gap: 28px;
+    }
+
+    .period {
+      display: grid;
+      grid-template-columns: 120px minmax(0, 1fr);
+      gap: 28px;
+      align-items: start;
+    }
+
+    .period-heading {
+      position: sticky;
+      top: 24px;
+      padding-top: 4px;
+      color: var(--muted);
+      font: 13px/1.5 "Segoe UI", "Noto Sans TC", sans-serif;
+    }
+
+    .period-heading strong {
+      display: block;
+      color: var(--ink);
+      font-family: "Noto Serif TC", "Songti TC", serif;
+      font-size: 22px;
+      line-height: 1.2;
+    }
+
+    .event-list {
+      position: relative;
+      display: grid;
+      gap: 16px;
+      padding-left: 24px;
+    }
+
+    .event-list::before {
+      content: "";
+      position: absolute;
+      left: 6px;
+      top: 6px;
+      bottom: 6px;
+      width: 1px;
+      background: linear-gradient(var(--hair), rgba(201,192,174,.25));
+    }
+
+    .event-card {
+      position: relative;
+      border: 1px solid var(--hair);
+      background: rgba(255,255,255,.58);
+      box-shadow: 0 1px 0 rgba(31,37,34,.04);
+      padding: 18px 18px 16px;
+      cursor: pointer;
+      transition: transform .2s ease, border-color .2s ease, box-shadow .2s ease, background .2s ease;
+    }
+
+    .event-card::before {
+      content: "";
+      position: absolute;
+      left: -24px;
+      top: 25px;
+      width: 13px;
+      height: 13px;
+      border: 2px solid var(--paper);
+      background: var(--dot, var(--cinnabar));
+      box-shadow: 0 0 0 1px var(--hair);
+      transform: rotate(45deg);
+    }
+
+    .event-card:hover,
+    .event-card.active {
+      transform: translateY(-2px);
+      border-color: color-mix(in srgb, var(--dot, var(--cinnabar)) 50%, var(--hair));
+      box-shadow: var(--shadow);
+      background: rgba(255,255,255,.78);
+    }
+
+    .event-top {
+      display: flex;
+      justify-content: space-between;
+      gap: 18px;
+      align-items: baseline;
+    }
+
+    .event-year {
+      color: var(--cinnabar-dark);
+      font-weight: 800;
+      font-size: 22px;
+      font-variant-numeric: tabular-nums;
+      white-space: nowrap;
+    }
+
+    h2 {
+      margin: 0;
+      font-size: clamp(21px, 2.1vw, 30px);
+      line-height: 1.22;
+      letter-spacing: 0;
+    }
+
+    .event-place {
+      color: var(--muted);
+      font: 13px/1.4 "Segoe UI", "Noto Sans TC", sans-serif;
+      margin-top: 4px;
+    }
+
+    .event-summary {
+      margin: 12px 0 0;
+      color: #343a36;
+      max-width: 72ch;
+    }
+
+    .tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-top: 14px;
+    }
+
+    .tag {
+      color: var(--muted);
+      border: 1px solid rgba(105,113,107,.28);
+      padding: 3px 7px;
+      font: 12px/1.2 "Segoe UI", "Noto Sans TC", sans-serif;
+    }
+
+    .details {
+      display: grid;
+      grid-template-rows: 0fr;
+      transition: grid-template-rows .24s ease;
+    }
+
+    .details-inner {
+      overflow: hidden;
+    }
+
+    .event-card.active .details {
+      grid-template-rows: 1fr;
+    }
+
+    .detail-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 12px;
+      margin-top: 16px;
+      padding-top: 16px;
+      border-top: 1px solid var(--hair);
+    }
+
+    .detail-block {
+      min-width: 0;
+    }
+
+    .detail-block b {
+      display: block;
+      margin-bottom: 4px;
+      color: var(--ink);
+      font: 13px/1.3 "Segoe UI", "Noto Sans TC", sans-serif;
+    }
+
+    .detail-block p {
+      margin: 0;
+      color: var(--muted);
+      font-size: 14px;
+    }
+
+    .source {
+      margin-top: 13px;
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .empty {
+      display: none;
+      border: 1px dashed var(--hair);
+      padding: 28px;
+      color: var(--muted);
+      background: rgba(255,255,255,.45);
+      text-align: center;
+    }
+
+    .empty.visible {
+      display: block;
+    }
+
+    [hidden] {
+      display: none !important;
+    }
+
+    @media (max-width: 920px) {
+      .shell {
+        display: block;
+      }
+
+      aside {
+        position: relative;
+        height: auto;
+        border-right: 0;
+        border-bottom: 1px solid var(--hair);
+      }
+
+      main {
+        padding-top: 24px;
+      }
+
+      .period {
+        grid-template-columns: 1fr;
+        gap: 12px;
+      }
+
+      .period-heading {
+        position: static;
+        border-bottom: 1px solid var(--hair);
+        padding-bottom: 8px;
+      }
+    }
+
+    @media (max-width: 620px) {
+      aside {
+        padding: 22px 18px;
+      }
+
+      .title-row {
+        gap: 12px;
+      }
+
+      .seal {
+        width: 48px;
+        font-size: 20px;
+      }
+
+      .meta-strip,
+      .detail-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .meta-strip div + div {
+        border-left: 0;
+        border-top: 1px solid var(--hair);
+        padding-left: 0;
+      }
+
+      .event-top {
+        display: block;
+      }
+
+      .event-year {
+        display: block;
+        margin-bottom: 6px;
+      }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *,
+      *::before,
+      *::after {
+        scroll-behavior: auto !important;
+        transition: none !important;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="shell">
+    <aside>
+      <div class="title-row">
+        <div class="seal" aria-hidden="true">史</div>
+        <div>
+          <h1>三國重大事件時間軸</h1>
+          <p class="subtitle">依據目前知識庫整理，從東漢中央崩壞、群雄競逐，到孫劉決裂與蜀漢轉折。</p>
+        </div>
+      </div>
+
+      <div class="meta-strip" aria-label="時間軸統計">
+        <div>
+          <span class="meta-label">events</span>
+          <span class="meta-value" id="visibleCount">11</span>
+        </div>
+        <div>
+          <span class="meta-label">range</span>
+          <span class="meta-value">189-222</span>
+        </div>
+      </div>
+
+      <div class="controls" aria-label="篩選工具">
+        <div class="control-block">
+          <label for="searchInput">搜尋事件、人物、地點</label>
+          <input class="searchbox" id="searchInput" type="search" placeholder="例如：曹操、荊州、赤壁">
+        </div>
+
+        <div class="control-block">
+          <div class="control-title">陣營與主題</div>
+          <div class="chips" id="chips" role="listbox" aria-label="陣營篩選">
+            <button class="chip active" type="button" data-filter="all">全部</button>
+            <button class="chip" type="button" data-filter="東漢">東漢</button>
+            <button class="chip" type="button" data-filter="曹魏">曹魏</button>
+            <button class="chip" type="button" data-filter="蜀漢">蜀漢</button>
+            <button class="chip" type="button" data-filter="東吳">東吳</button>
+            <button class="chip" type="button" data-filter="戰役">戰役</button>
+          </div>
+        </div>
+
+        <div class="control-block">
+          <label for="yearRange">只看此年以前</label>
+          <div class="range-row">
+            <input id="yearRange" type="range" min="189" max="222" value="222">
+            <output class="range-value" id="yearOutput" for="yearRange">222</output>
+          </div>
+        </div>
+
+        <button class="reset" type="button" id="resetBtn">重置篩選</button>
+      </div>
+
+      <p class="note">點選事件可展開背景、經過與影響。桃園三結義屬敘事源頭，未納入年份滑桿限制。</p>
+    </aside>
+
+    <main>
+      <nav class="period-nav" aria-label="時期快速導覽">
+        <a href="#origin">敘事源頭</a>
+        <a href="#collapse">中央崩壞</a>
+        <a href="#rivalry">群雄競逐</a>
+        <a href="#tripod">三分成形</a>
+        <a href="#fracture">聯盟破裂</a>
+      </nav>
+
+      <div class="timeline" id="timeline">
+        <section class="period" id="origin" data-period>
+          <div class="period-heading"><strong>敘事源頭</strong>正史之外的關係入口</div>
+          <div class="event-list">
+            <article class="event-card" tabindex="0" data-year="184" data-floating="true" data-tags="蜀漢 敘事" data-search="桃園三結義 劉備 關羽 張飛 涿郡">
+              <div class="event-top">
+                <h2>桃園三結義</h2>
+                <span class="event-year">未定年</span>
+              </div>
+              <div class="event-place">涿郡一帶</div>
+              <p class="event-summary">小說與民間敘事中的象徵事件，用來理解劉備、關羽、張飛的兄弟情誼。</p>
+              <div class="tags"><span class="tag">蜀漢</span><span class="tag">敘事</span></div>
+              <div class="details"><div class="details-inner">
+                <div class="detail-grid">
+                  <div class="detail-block"><b>背景</b><p>正史主要記載三人「恩若兄弟」，沒有明確寫出桃園結拜儀式。</p></div>
+                  <div class="detail-block"><b>經過</b><p>作為三國故事入口，象徵三人因共同理想而互相扶持。</p></div>
+                  <div class="detail-block"><b>影響</b><p>有助於理解蜀漢早期核心關係與忠義形象。</p></div>
+                </div>
+                <div class="source">來源：知識庫 / 事件 / 桃園三結義.md</div>
+              </div></div>
+            </article>
+          </div>
+        </section>
+
+        <section class="period" id="collapse" data-period>
+          <div class="period-heading"><strong>中央崩壞</strong>皇權失序，地方軍事化</div>
+          <div class="event-list">
+            <article class="event-card" tabindex="0" data-year="189" data-tags="東漢 曹魏 戰役" data-search="董卓亂政 董卓 曹操 袁紹 袁術 洛陽 長安">
+              <div class="event-top">
+                <h2>董卓亂政</h2>
+                <span class="event-year">189-192</span>
+              </div>
+              <div class="event-place">洛陽、長安</div>
+              <p class="event-summary">董卓入京掌權、廢立皇帝、遷都長安，使東漢中央威信崩潰。</p>
+              <div class="tags"><span class="tag">東漢</span><span class="tag">軍閥</span></div>
+              <div class="details"><div class="details-inner">
+                <div class="detail-grid">
+                  <div class="detail-block"><b>背景</b><p>何進與宦官衝突失控，董卓率軍進入洛陽。</p></div>
+                  <div class="detail-block"><b>經過</b><p>廢少帝、立獻帝，刑罰嚴酷，並焚毀洛陽、遷都長安。</p></div>
+                  <div class="detail-block"><b>影響</b><p>各地州牧與軍閥開始以討董、勤王或自保為名擴張。</p></div>
+                </div>
+                <div class="source">來源：知識庫 / 事件 / 董卓亂政.md</div>
+              </div></div>
+            </article>
+
+            <article class="event-card" tabindex="0" data-year="197" data-tags="東漢 曹魏 蜀漢" data-search="袁術稱帝 袁術 曹操 劉備 淮南 仲氏">
+              <div class="event-top">
+                <h2>袁術稱帝</h2>
+                <span class="event-year">197</span>
+              </div>
+              <div class="event-place">淮南</div>
+              <p class="event-summary">袁術在淮南僭號稱帝，失去政治正當性並快速敗亡。</p>
+              <div class="tags"><span class="tag">東漢</span><span class="tag">軍閥</span></div>
+              <div class="details"><div class="details-inner">
+                <div class="detail-grid">
+                  <div class="detail-block"><b>背景</b><p>袁術出身名門，又控制淮南，逐漸產生取代漢室的野心。</p></div>
+                  <div class="detail-block"><b>經過</b><p>以符命與姓氏附會為理由，自稱皇帝，建號「仲氏」。</p></div>
+                  <div class="detail-block"><b>影響</b><p>成為曹操、呂布、劉備等勢力共同反對的對象。</p></div>
+                </div>
+                <div class="source">來源：知識庫 / 事件 / 袁術稱帝.md</div>
+              </div></div>
+            </article>
+          </div>
+        </section>
+
+        <section class="period" id="rivalry" data-period>
+          <div class="period-heading"><strong>群雄競逐</strong>北方主導權與荊州轉折</div>
+          <div class="event-list">
+            <article class="event-card" tabindex="0" data-year="200" data-tags="曹魏 戰役" data-search="官渡之戰 曹操 袁紹 官渡 烏巢 北方">
+              <div class="event-top">
+                <h2>官渡之戰</h2>
+                <span class="event-year">200</span>
+              </div>
+              <div class="event-place">官渡、烏巢一帶</div>
+              <p class="event-summary">曹操擊敗袁紹，奠定北方優勢。</p>
+              <div class="tags"><span class="tag">曹魏</span><span class="tag">戰役</span></div>
+              <div class="details"><div class="details-inner">
+                <div class="detail-grid">
+                  <div class="detail-block"><b>背景</b><p>曹操與袁紹爭奪北方主導權，雙方在官渡長期對峙。</p></div>
+                  <div class="detail-block"><b>經過</b><p>許攸投曹，建議襲擊烏巢糧草；曹操夜襲成功。</p></div>
+                  <div class="detail-block"><b>影響</b><p>袁紹勢力衰退，曹操逐步取得冀州與北方優勢。</p></div>
+                </div>
+                <div class="source">來源：知識庫 / 事件 / 官渡之戰.md</div>
+              </div></div>
+            </article>
+
+            <article class="event-card" tabindex="0" data-year="208" data-tags="蜀漢 曹魏 戰役" data-search="長坂之戰 劉備 曹操 張飛 趙雲 諸葛亮 當陽 長坂">
+              <div class="event-top">
+                <h2>長坂之戰</h2>
+                <span class="event-year">208</span>
+              </div>
+              <div class="event-place">當陽長坂</div>
+              <p class="event-summary">曹操追擊劉備，張飛斷後、趙雲護主，促使劉備轉向聯孫抗曹。</p>
+              <div class="tags"><span class="tag">蜀漢</span><span class="tag">曹魏</span><span class="tag">戰役</span></div>
+              <div class="details"><div class="details-inner">
+                <div class="detail-grid">
+                  <div class="detail-block"><b>背景</b><p>劉琮降曹後，劉備南撤，曹操以精騎急追。</p></div>
+                  <div class="detail-block"><b>經過</b><p>劉備被迫棄妻子逃走，張飛斷後，趙雲保護甘夫人與劉禪。</p></div>
+                  <div class="detail-block"><b>影響</b><p>劉備勢力受創，也促成諸葛亮出使江東。</p></div>
+                </div>
+                <div class="source">來源：知識庫 / 事件 / 長坂之戰.md</div>
+              </div></div>
+            </article>
+          </div>
+        </section>
+
+        <section class="period" id="tripod" data-period>
+          <div class="period-heading"><strong>三分成形</strong>孫劉合作與蜀漢根基</div>
+          <div class="event-list">
+            <article class="event-card" tabindex="0" data-year="208" data-tags="曹魏 蜀漢 東吳 戰役" data-search="赤壁之戰 曹操 劉備 孫權 周瑜 魯肅 諸葛亮 赤壁 烏林">
+              <div class="event-top">
+                <h2>赤壁之戰</h2>
+                <span class="event-year">208</span>
+              </div>
+              <div class="event-place">赤壁、烏林一帶</div>
+              <p class="event-summary">孫權與劉備聯軍擊敗曹操，奠定三國鼎立格局。</p>
+              <div class="tags"><span class="tag">曹魏</span><span class="tag">蜀漢</span><span class="tag">東吳</span><span class="tag">戰役</span></div>
+              <div class="details"><div class="details-inner">
+                <div class="detail-grid">
+                  <div class="detail-block"><b>背景</b><p>曹操取得荊州後順江東下，劉備在長坂後處境危急。</p></div>
+                  <div class="detail-block"><b>經過</b><p>周瑜判斷曹軍不習水戰，黃蓋詐降火攻，曹操北退。</p></div>
+                  <div class="detail-block"><b>影響</b><p>曹操無法一舉南下，孫權保住江東，劉備得到發展空間。</p></div>
+                </div>
+                <div class="source">來源：知識庫 / 事件 / 赤壁之戰.md</div>
+              </div></div>
+            </article>
+
+            <article class="event-card" tabindex="0" data-year="211" data-tags="蜀漢" data-search="劉備入蜀 劉備 諸葛亮 黃忠 張飛 趙雲 益州 成都">
+              <div class="event-top">
+                <h2>劉備入蜀</h2>
+                <span class="event-year">211-214</span>
+              </div>
+              <div class="event-place">益州、成都</div>
+              <p class="event-summary">劉備由受邀入益州轉為攻取成都，建立蜀漢根基。</p>
+              <div class="tags"><span class="tag">蜀漢</span><span class="tag">政權</span></div>
+              <div class="details"><div class="details-inner">
+                <div class="detail-grid">
+                  <div class="detail-block"><b>背景</b><p>益州牧劉璋邀劉備入蜀協助，益州也是隆中戰略的重要方向。</p></div>
+                  <div class="detail-block"><b>經過</b><p>雙方決裂後，劉備進軍攻取益州，諸葛亮、張飛、趙雲分定郡縣。</p></div>
+                  <div class="detail-block"><b>影響</b><p>劉備取得穩定根據地，具備爭奪漢中的條件。</p></div>
+                </div>
+                <div class="source">來源：知識庫 / 事件 / 劉備入蜀.md</div>
+              </div></div>
+            </article>
+
+            <article class="event-card" tabindex="0" data-year="217" data-tags="蜀漢 曹魏 戰役" data-search="漢中之戰 劉備 曹操 張飛 黃忠 夏侯淵 漢中 定軍山">
+              <div class="event-top">
+                <h2>漢中之戰</h2>
+                <span class="event-year">217-219</span>
+              </div>
+              <div class="event-place">漢中、定軍山一帶</div>
+              <p class="event-summary">劉備擊退曹操勢力，取得漢中並自立為漢中王。</p>
+              <div class="tags"><span class="tag">蜀漢</span><span class="tag">曹魏</span><span class="tag">戰役</span></div>
+              <div class="details"><div class="details-inner">
+                <div class="detail-grid">
+                  <div class="detail-block"><b>背景</b><p>漢中是益州北方門戶，若由曹操控制，劉備在益州會受威脅。</p></div>
+                  <div class="detail-block"><b>經過</b><p>黃忠於定軍山斬夏侯淵，曹操親征仍久攻不利。</p></div>
+                  <div class="detail-block"><b>影響</b><p>蜀漢勢力達到高峰，曹操西南擴張受阻。</p></div>
+                </div>
+                <div class="source">來源：知識庫 / 事件 / 漢中之戰.md</div>
+              </div></div>
+            </article>
+          </div>
+        </section>
+
+        <section class="period" id="fracture" data-period>
+          <div class="period-heading"><strong>聯盟破裂</strong>荊州失衡與蜀吳戰爭</div>
+          <div class="event-list">
+            <article class="event-card" tabindex="0" data-year="219" data-tags="蜀漢 曹魏 東吳 戰役" data-search="關羽北伐 關羽 曹操 孫權 呂蒙 樊城 襄陽">
+              <div class="event-top">
+                <h2>關羽北伐</h2>
+                <span class="event-year">219</span>
+              </div>
+              <div class="event-place">樊城、襄陽一帶</div>
+              <p class="event-summary">關羽圍攻樊城，水淹七軍，一度威震華夏。</p>
+              <div class="tags"><span class="tag">蜀漢</span><span class="tag">曹魏</span><span class="tag">戰役</span></div>
+              <div class="details"><div class="details-inner">
+                <div class="detail-grid">
+                  <div class="detail-block"><b>背景</b><p>劉備稱漢中王後，關羽鎮守荊州並向北施壓。</p></div>
+                  <div class="detail-block"><b>經過</b><p>秋雨使漢水暴漲，于禁所督七軍被淹，龐德被斬。</p></div>
+                  <div class="detail-block"><b>影響</b><p>前線聲勢大振，但荊州後方暴露，給東吳可乘之機。</p></div>
+                </div>
+                <div class="source">來源：知識庫 / 事件 / 關羽北伐.md</div>
+              </div></div>
+            </article>
+
+            <article class="event-card" tabindex="0" data-year="209" data-tags="蜀漢 東吳" data-search="荊州之爭 劉備 孫權 魯肅 關羽 呂蒙 荊州 南郡 益陽">
+              <div class="event-top">
+                <h2>荊州之爭</h2>
+                <span class="event-year">209-219</span>
+              </div>
+              <div class="event-place">荊州、南郡、公安、益陽一帶</div>
+              <p class="event-summary">孫劉雙方爭奪荊州，最後以呂蒙襲取南郡、關羽敗亡告終。</p>
+              <div class="tags"><span class="tag">蜀漢</span><span class="tag">東吳</span></div>
+              <div class="details"><div class="details-inner">
+                <div class="detail-grid">
+                  <div class="detail-block"><b>背景</b><p>赤壁後，荊州是劉備入蜀與孫權守江東的共同關鍵。</p></div>
+                  <div class="detail-block"><b>經過</b><p>魯肅與關羽在益陽交涉，後呂蒙趁關羽北伐襲取南郡。</p></div>
+                  <div class="detail-block"><b>影響</b><p>孫劉聯盟重大裂痕，直接引發劉備東征。</p></div>
+                </div>
+                <div class="source">來源：知識庫 / 事件 / 荊州之爭.md</div>
+              </div></div>
+            </article>
+
+            <article class="event-card" tabindex="0" data-year="221" data-tags="蜀漢 東吳 戰役" data-search="夷陵之戰 劉備 孫權 陸遜 關羽 夷陵 猇亭 秭歸">
+              <div class="event-top">
+                <h2>夷陵之戰</h2>
+                <span class="event-year">221-222</span>
+              </div>
+              <div class="event-place">夷陵、猇亭、秭歸一帶</div>
+              <p class="event-summary">劉備伐吳失利，蜀漢元氣大傷。</p>
+              <div class="tags"><span class="tag">蜀漢</span><span class="tag">東吳</span><span class="tag">戰役</span></div>
+              <div class="details"><div class="details-inner">
+                <div class="detail-grid">
+                  <div class="detail-block"><b>背景</b><p>關羽敗亡與荊州失守後，劉備決定東征東吳。</p></div>
+                  <div class="detail-block"><b>經過</b><p>陸遜採取持守策略，222 年抓住時機反攻，大破蜀軍。</p></div>
+                  <div class="detail-block"><b>影響</b><p>劉備退回永安並病重，蜀漢進入諸葛亮輔政時期。</p></div>
+                </div>
+                <div class="source">來源：知識庫 / 事件 / 夷陵之戰.md</div>
+              </div></div>
+            </article>
+          </div>
+        </section>
+
+        <div class="empty" id="emptyState">沒有符合條件的事件。請調整搜尋字、陣營或年份範圍。</div>
+      </div>
+    </main>
+  </div>
+
+  <script>
+    const cards = Array.from(document.querySelectorAll(".event-card"));
+    const chips = Array.from(document.querySelectorAll(".chip"));
+    const searchInput = document.querySelector("#searchInput");
+    const yearRange = document.querySelector("#yearRange");
+    const yearOutput = document.querySelector("#yearOutput");
+    const visibleCount = document.querySelector("#visibleCount");
+    const emptyState = document.querySelector("#emptyState");
+    const resetBtn = document.querySelector("#resetBtn");
+    let activeFilter = "all";
+
+    const palette = {
+      "東漢": "#9a7534",
+      "曹魏": "#253c5c",
+      "蜀漢": "#a83b2e",
+      "東吳": "#34695b",
+      "戰役": "#1f2522"
+    };
+
+    cards.forEach((card) => {
+      const tags = card.dataset.tags.split(" ");
+      const colorKey = tags.find((tag) => palette[tag]) || "戰役";
+      card.style.setProperty("--dot", palette[colorKey]);
+      card.addEventListener("click", () => toggleCard(card));
+      card.addEventListener("keydown", (event) => {
+        if (event.key === "Enter" || event.key === " ") {
+          event.preventDefault();
+          toggleCard(card);
+        }
+      });
+    });
+
+    function toggleCard(card) {
+      const isActive = card.classList.contains("active");
+      cards.forEach((item) => item.classList.remove("active"));
+      if (!isActive) card.classList.add("active");
+    }
+
+    function applyFilters() {
+      const term = searchInput.value.trim().toLowerCase();
+      const maxYear = Number(yearRange.value);
+      let count = 0;
+
+      cards.forEach((card) => {
+        const tags = card.dataset.tags.split(" ");
+        const year = Number(card.dataset.year);
+        const isFloating = card.dataset.floating === "true";
+        const matchesFilter = activeFilter === "all" || tags.includes(activeFilter);
+        const matchesYear = isFloating || year <= maxYear;
+        const matchesSearch = !term || card.dataset.search.toLowerCase().includes(term) || card.innerText.toLowerCase().includes(term);
+        const visible = matchesFilter && matchesYear && matchesSearch;
+        card.hidden = !visible;
+        if (!visible) card.classList.remove("active");
+        if (visible) count += 1;
+      });
+
+      document.querySelectorAll("[data-period]").forEach((period) => {
+        const hasVisible = Array.from(period.querySelectorAll(".event-card")).some((card) => !card.hidden);
+        period.hidden = !hasVisible;
+      });
+
+      visibleCount.textContent = count;
+      emptyState.classList.toggle("visible", count === 0);
+    }
+
+    chips.forEach((chip) => {
+      chip.addEventListener("click", () => {
+        activeFilter = chip.dataset.filter;
+        chips.forEach((item) => item.classList.toggle("active", item === chip));
+        applyFilters();
+      });
+    });
+
+    searchInput.addEventListener("input", applyFilters);
+    yearRange.addEventListener("input", () => {
+      yearOutput.value = yearRange.value;
+      yearOutput.textContent = yearRange.value;
+      applyFilters();
+    });
+
+    resetBtn.addEventListener("click", () => {
+      activeFilter = "all";
+      searchInput.value = "";
+      yearRange.value = "222";
+      yearOutput.textContent = "222";
+      chips.forEach((item) => item.classList.toggle("active", item.dataset.filter === "all"));
+      cards.forEach((item) => item.classList.remove("active"));
+      applyFilters();
+    });
+
+    applyFilters();
+  </script>
+</body>
+</html>
